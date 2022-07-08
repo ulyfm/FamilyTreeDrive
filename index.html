@@ -140,13 +140,8 @@
             (str, file) => `${str}${file.name} (${file.id}\n`,
             'Files:\n');
         document.getElementById('content').innerText = output;
-      }
-	  
-	      // Create and render a Picker object for selecting from Google Drive
-    function createPicker() {
-      const showPicker = () => {
-        // TODO(developer): Replace with your API key
-        const picker = new google.picker.PickerBuilder()
+		//test
+		new google.picker.PickerBuilder()
             .addView(google.picker.ViewId.DOCS)
             .setOAuthToken(accessToken)
             .setDeveloperKey(API_KEY)
@@ -154,25 +149,6 @@
             .build();
         picker.setVisible(true);
       }
-
-      // Use Google Identity Services to request an access token
-      tokenClient.callback = async (response) => {
-        if (response.error !== undefined) {
-          throw (response);
-        }
-        accessToken = response.access_token;
-        showPicker();
-      };
-
-      if (token === null) {
-        // Prompt the user to select a Google Account and ask for consent to share their data
-        // when establishing a new session.
-        tokenClient.requestAccessToken({prompt: 'consent'});
-      } else {
-        // Skip display of account chooser and consent dialog for an existing session.
-        tokenClient.requestAccessToken({prompt: ''});
-      }
-    }
     
 	// A simple callback implementation.
     function pickerCallback(data) {
