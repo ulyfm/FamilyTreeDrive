@@ -140,6 +140,7 @@
             (str, file) => `${str}${file.name} (${file.id}\n`,
             'Files:\n');
         document.getElementById('content').innerText = output;
+		//test
 		new google.picker.PickerBuilder()
             .addView(google.picker.ViewId.DOCS)
             .setOAuthToken(accessToken)
