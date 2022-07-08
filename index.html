@@ -141,7 +141,7 @@
             'Files:\n');
         document.getElementById('content').innerText = output;
 		//test
-		new google.picker.PickerBuilder()
+		 const picker = new google.picker.PickerBuilder()
             .addView(google.picker.ViewId.DOCS)
             .setOAuthToken(gapi.client.getToken())
             .setDeveloperKey(API_KEY)
