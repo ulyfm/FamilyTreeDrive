@@ -106,9 +106,6 @@
        *  Sign out the user upon button click.
        */
       function handleSignoutClick() {
-	  
-	  //TODO: actually opens picker.
-	  createPicker();
         const token = gapi.client.getToken();
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
