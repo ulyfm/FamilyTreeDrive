@@ -20,7 +20,7 @@
 angular.module('editor', ['editor.login', 'editor.rename', 'editor.drive', 'ngRoute', 'ngMaterial', 'ui.codemirror'])
   .constant('apiKey', 'AIzaSyBIDMPwxwOu0D1BVjFYxJbXiS_mXwmUHds')
   .constant('clientId', '268462531336-3njs1jn4drenn9bf875q5s6abcvp5r8d.apps.googleusercontent.com')
-  .constant('applicationId', 'familytreedrive-355702')
+  .constant('applicationId', '709207149709')
   .constant('scope', ['email', 'profile', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.install'])
   .constant('loadApis', {
     'drive' : 'v2'
