@@ -141,7 +141,7 @@
             'Files:\n');
         document.getElementById('content').innerText = output;
 		//test
-		new google.picker.PickerBuilder()
+		 const picker = new google.picker.PickerBuilder()
             .addView(google.picker.ViewId.DOCS)
             .setOAuthToken(gapi.client.getToken())
             .setDeveloperKey(API_KEY)
@@ -161,6 +161,33 @@
       document.getElementById('result').innerText = message;
     }
     
+	function gd_updateFile(fileId, folderId, text, callback) {
+
+    const boundary = '-------314159265358979323846';
+    const delimiter = "\r\n--" + boundary + "\r\n";
+    const close_delim = "\r\n--" + boundary + "--";
+
+    var contentType = "text/html";
+    var metadata = {'mimeType': contentType,};
+
+    var multipartRequestBody =
+        delimiter +  'Content-Type: application/json\r\n\r\n' +
+        JSON.stringify(metadata) +
+        delimiter + 'Content-Type: ' + contentType + '\r\n' + '\r\n' +
+        text +
+        close_delim;
+
+    if (!callback) { callback = function(file) { console.log("Update Complete ",file) }; }
+
+    gapi.client.request({
+        'path': '/upload/drive/v2/files/'+folderId+"?fileId="+fileId+"&uploadType=multipart",
+        'method': 'PUT',
+        'params': {'fileId': fileId, 'uploadType': 'multipart'},
+        'headers': {'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'},
+        'body': multipartRequestBody,
+        callback:callback,
+    });
+  }
 	
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
