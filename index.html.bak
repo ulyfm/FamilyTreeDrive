@@ -9,6 +9,7 @@
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+	<button id="picker_button" onclick="handlePickerClick()">Picker</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
@@ -20,7 +21,7 @@
       /* exported handleSignoutClick */
 
       // TODO(developer): Set to client ID and API key from the Developer Console
-      const CLIENT_ID = '<YOUR_CLIENT_ID>';
+      const CLIENT_ID = '268462531336-3njs1jn4drenn9bf875q5s6abcvp5r8d.apps.googleusercontent.com';
       const API_KEY = 'AIzaSyBIDMPwxwOu0D1BVjFYxJbXiS_mXwmUHds';
 
       // Discovery doc URL for APIs used by the quickstart
@@ -28,21 +29,29 @@
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+      const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly' +
+	  ' https://www.googleapis.com/auth/drive.file';
 
       let tokenClient;
       let gapiInited = false;
       let gisInited = false;
+	  let pickerInited = false;
 
       document.getElementById('authorize_button').style.visibility = 'hidden';
       document.getElementById('signout_button').style.visibility = 'hidden';
+	  document.getElementById('picker_button').style.visibility = 'hidden';
 
       /**
        * Callback after api.js is loaded.
        */
       function gapiLoaded() {
         gapi.load('client', intializeGapiClient);
+		gapi.load('picker', onPickerApiLoad);
       }
+	  
+	  function onPickerApiLoad() {
+		pickerInited = true;
+	  }
 
       /**
        * Callback after the API client is loaded. Loads the
@@ -79,6 +88,48 @@
         }
       }
 
+	  function handlePickerClick() {
+      const showPicker = () => {
+        // TODO(developer): Replace with your API key
+        const picker = new google.picker.PickerBuilder()
+            .addView(google.picker.ViewId.DOCS)
+            .setOAuthToken(gapi.client.getToken())
+            .setDeveloperKey(API_KEY)
+            .setCallback(pickerCallback)
+            .build();
+        picker.setVisible(true);
+      }
+
+      // Use Google Identity Services to request an access token
+      tokenClient.callback = async (response) => {
+        if (response.error !== undefined) {
+          throw (response);
+        }
+        accessToken = response.access_token;
+        showPicker();
+      };
+
+      if (gapi.client.getToken() === null) {
+        // Prompt the user to select a Google Account and ask for consent to share their data
+        // when establishing a new session.
+        tokenClient.requestAccessToken({prompt: 'consent'});
+      } else {
+        // Skip display of account chooser and consent dialog for an existing session.
+        tokenClient.requestAccessToken({prompt: ''});
+      }
+    }
+	
+	// A simple callback implementation.
+    function pickerCallback(data) {
+      let url = 'nothing';
+      if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+        let doc = data[google.picker.Response.DOCUMENTS][0];
+        url = doc[google.picker.Document.URL];
+      }
+      let message = `You picked: ${url}`;
+      document.getElementById('result').innerText = message;
+    }
+
       /**
        *  Sign in the user upon button click.
        */
@@ -87,6 +138,7 @@
           if (resp.error !== undefined) {
             throw (resp);
           }
+		  document.getElementById('picker_button').style.visibility = 'visible';
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
           await listFiles();
