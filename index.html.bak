@@ -107,7 +107,7 @@
         }
         showPicker();
       };
-		console.log(gapi.client.getToken());
+		alert(gapi.client.getToken().access_token);
       if (gapi.client.getToken() === null) {
         // Prompt the user to select a Google Account and ask for consent to share their data
         // when establishing a new session.
