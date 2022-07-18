@@ -105,10 +105,9 @@
         if (response.error !== undefined) {
           throw (response);
         }
-        accessToken = response.access_token;
         showPicker();
       };
-
+		console.log(gapi.client.getToken())
       if (gapi.client.getToken() === null) {
         // Prompt the user to select a Google Account and ask for consent to share their data
         // when establishing a new session.
