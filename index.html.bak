@@ -93,7 +93,7 @@
         // TODO(developer): Replace with your API key
         const picker = new google.picker.PickerBuilder()
             .addView(google.picker.ViewId.DOCS)
-            .setOAuthToken(gapi.client.getToken())
+            .setOAuthToken(gapi.client.getToken().access_token)
             .setDeveloperKey(API_KEY)
             .setCallback(pickerCallback)
             .build();
@@ -126,7 +126,7 @@
         url = doc[google.picker.Document.URL];
       }
       let message = `You picked: ${url}`;
-      document.getElementById('result').innerText = message;
+      document.getElementById('content').innerText = message;
     }
 
       /**
