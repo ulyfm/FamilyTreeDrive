@@ -91,8 +91,10 @@
 	  function handlePickerClick() {
       const showPicker = () => {
         // TODO(developer): Replace with your API key
+		var view = new google.picker.DocsView(google.picker.ViewId.DOCS);
+		view.setQuery("*.ftdrive");
         const picker = new google.picker.PickerBuilder()
-            .addView(google.picker.ViewId.DOCS)
+            .addView(view)
             .setOAuthToken(gapi.client.getToken().access_token)
             .setDeveloperKey(API_KEY)
             .setCallback(pickerCallback)
