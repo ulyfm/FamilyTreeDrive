@@ -114,6 +114,7 @@
         // when establishing a new session.
         tokenClient.requestAccessToken({prompt: 'consent'});
       } else {
+	  alert("skipping");
         // Skip display of account chooser and consent dialog for an existing session.
         tokenClient.requestAccessToken({prompt: ''});
       }
@@ -164,6 +165,7 @@
           gapi.client.setToken('');
           document.getElementById('content').innerText = '';
           document.getElementById('authorize_button').innerText = 'Authorize';
+		  document.getElementById('picker_button').style.visibility = 'hidden';
           document.getElementById('signout_button').style.visibility = 'hidden';
         }
       }
