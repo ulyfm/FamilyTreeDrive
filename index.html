@@ -136,12 +136,13 @@
       }
 	  alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
-	  gapi.client.drive.files.get({
+	  gapi.client.drive.files.export({
 		fileId: id,
-		fields: 'webContentLink'
+		mimeType: 'text/plain',
+		fields: 'id,name,parents'
 	  }).then(function(success){
 		var webContentLink = success.result.webContentLink; //the link is in the success.result object
-		alert(webContentLink);
+		alert("content:" + success.body);
 		//success.result    
 	  }, function(fail){
 		console.log(fail);

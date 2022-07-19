@@ -132,16 +132,16 @@
         let doc = data[google.picker.Response.DOCUMENTS][0];
         url = doc[google.picker.Document.URL];
 		id = doc[google.picker.Document.ID];
-		alert(`ID: ${id}`)
+		alert(`ID: ${id}`);
       }
 	  alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
-	  gapi.client.drive.files.get({
+	  gapi.client.drive.files.export({
 		fileId: id,
-		fields: 'webContentLink'
+		fields: 'id,name,parents'
 	  }).then(function(success){
 		var webContentLink = success.result.webContentLink; //the link is in the success.result object
-		alert(webContentLink);
+		alert("content:" + success.body);
 		//success.result    
 	  }, function(fail){
 		console.log(fail);
