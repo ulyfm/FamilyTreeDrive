@@ -126,14 +126,15 @@
 	// A simple callback implementation.
     function pickerCallback(data) {
       let url = 'nothing';
-	  let id = 'id';
+	  let id = 'nothing';
       if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+	  
         let doc = data[google.picker.Response.DOCUMENTS][0];
         url = doc[google.picker.Document.URL];
-		alert(doc[google.picker.Document.ID]);
 		id = doc[google.picker.Document.ID];
-		alert('ID: ${id}')
+		alert(`ID: ${id}`)
       }
+	  alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
 	  gapi.client.drive.files.get({
 		fileId: id,
