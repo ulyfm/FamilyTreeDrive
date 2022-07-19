@@ -136,20 +136,26 @@
       }
 	  alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
-	  gapi.client.drive.files.export({
-		fileId: id,
-		mimeType: 'text/plain',
-		fields: 'id,name,parents'
-	  }).then(function(success){
-		var webContentLink = success.result.webContentLink; //the link is in the success.result object
-		alert("content:" + success.body);
-		//success.result    
-	  }, function(fail){
-		console.log(fail);
-		console.log('Error '+ fail.result.error.message);
-	  })
+	  if(id !== 'nothing') {
+		loadFileRaw(id, function(file){
+		  alert('file contents:' + file.content);
+		});
+	  }
+	  
       document.getElementById('content').innerText = message;
     }
+	
+	function loadFileRaw(fileId, done) {
+    gapi.client.drive.files.get({
+      fileId: fileId,
+      alt: 'media'
+    }).then(function(resp) {
+      var retFile = {name: file.name, id: file.id, content: resp.body, parents: file.parents};
+      done(retFile);
+    }, function(reason){
+      console.log('loadFileRaw ERROR: ',reason)
+    });
+  }
 
       /**
        *  Sign in the user upon button click.
@@ -218,5 +224,6 @@
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+	<script src="drive.service.js"></script>
   </body>
 </html>
