@@ -132,6 +132,7 @@
         url = doc[google.picker.Document.URL];
 		alert(doc[google.picker.Document.ID]);
 		id = doc[google.picker.Document.ID];
+		alert(`ID: ${id}`)
       }
       let message = `You picked: ${url}`;
 	  gapi.client.drive.files.get({
