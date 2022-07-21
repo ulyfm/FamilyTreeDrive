@@ -141,7 +141,9 @@
       let message = `You picked: ${url}`;
 	  if(id !== 'nothing') {
 		loadFileRaw(id, function(file){
-		  //alert('file contents:' + file.content);
+		  document.getElementById('content').innerText = "file name: " + file.name + "\n"
+		  + "file id: " + file.id + "\n"
+		  + "file body: " + file.body;
 		});
 	  }
 	  
@@ -154,10 +156,8 @@
       alt: 'media',
 	  fields: ['id', 'name']
     }).then(function(resp) {
-	  alert("resp:" + JSON.stringify(resp));
-	  alert("body: " + resp.body);
-      var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
-      alert("name: " + retFile.name);
+      var retFile = {name: resp.name, id: resp.id, body: resp.body};
+	  done(retFile);
     }, function(reason){
       console.log('loadFileRaw ERROR: ',reason)
     });
