@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Drive API Quickstart</title>
+    <title>Family Tree Drive</title>
     <meta charset="utf-8" />
   </head>
   <body>
@@ -112,14 +112,14 @@
         }
         showPicker();
       };
-		alert(gapi.client.getToken().access_token);
+		//alert(gapi.client.getToken().access_token);
       if (gapi.client.getToken() === null) {
-	  alert("gapi token null! requesting");
+	  //alert("gapi token null! requesting");
         // Prompt the user to select a Google Account and ask for consent to share their data
         // when establishing a new session.
         tokenClient.requestAccessToken({prompt: 'consent'});
       } else {
-	  alert("skipping");
+	  //alert("skipping");
         // Skip display of account chooser and consent dialog for an existing session.
         showPicker();
 		//tokenClient.requestAccessToken({prompt: ''});
@@ -135,13 +135,13 @@
         let doc = data[google.picker.Response.DOCUMENTS][0];
         url = doc[google.picker.Document.URL];
 		id = doc[google.picker.Document.ID];
-		alert(`ID: ${id}`);
+		//alert(`ID: ${id}`);
       }
-	  alert(`attempting to get ${id}`);
+	  //alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
 	  if(id !== 'nothing') {
 		loadFileRaw(id, function(file){
-		  alert('file contents:' + file.content);
+		  //alert('file contents:' + file.content);
 		});
 	  }
 	  
@@ -154,7 +154,7 @@
       alt: 'media'
     }).then(function(resp) {
       var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
-      alert(retFile.name);
+      alert("name: " + retFile.name);
 	  alert("body: " + retFile.body);
     }, function(reason){
       console.log('loadFileRaw ERROR: ',reason)
