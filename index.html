@@ -151,7 +151,8 @@
 	function loadFileRaw(fileId, done) {
     gapi.client.drive.files.get({
       fileId: fileId,
-      alt: 'media'
+      alt: 'media',
+	  fields: ['id', 'name']
     }).then(function(resp) {
 	  alert("resp:" + JSON.stringify(resp));
 	  alert("body: " + resp.body);
