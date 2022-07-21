@@ -139,7 +139,7 @@
       }
 	  //alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
-	  if(id !== 'nothing') {
+	  if(id !== 'nothing' && id !== 'undefined') {
 		loadFileRaw(id, function(file){
 		  document.getElementById('content').innerText = file.body;
 		});
