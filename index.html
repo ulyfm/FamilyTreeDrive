@@ -153,7 +153,7 @@
       fileId: fileId,
       alt: 'media'
     }).then(function(resp) {
-	  alert("resp:" + resp);
+	  alert("resp:" + JSON.stringify(resp));
       var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
       alert("name: " + retFile.name);
 	  alert("body: " + retFile.body);
