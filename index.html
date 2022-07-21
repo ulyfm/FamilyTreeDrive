@@ -141,9 +141,7 @@
       let message = `You picked: ${url}`;
 	  if(id !== 'nothing') {
 		loadFileRaw(id, function(file){
-		  document.getElementById('content').innerText = "file name: " + file.name + "\n"
-		  + "file id: " + file.id + "\n"
-		  + "file body: " + file.body;
+		  document.getElementById('content').innerText = file.body;
 		});
 	  }
 	  
