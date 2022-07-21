@@ -154,8 +154,9 @@
     gapi.client.drive.files.get({
       fileId: fileId,
       alt: 'media',
-	  fields: ['id', 'name']
+	  fields: 'id,name'
     }).then(function(resp) {
+	alert(resp);
       var retFile = {name: resp.name, id: resp.id, body: resp.body};
 	  done(retFile);
     }, function(reason){
