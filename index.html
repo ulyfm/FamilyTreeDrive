@@ -12,6 +12,7 @@
 	<button id="picker_button" onclick="handlePickerClick()">Picker</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
+	<pre id="needs_update" style="white-space: pre-wrap;"></pre>
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
     <script type="text/javascript">
@@ -34,6 +35,10 @@
 	  ' https://www.googleapis.com/auth/drive.file' +
 	  ' https://www.googleapis.com/auth/drive.install';
 
+	  let currentTree = "";
+	  let currentFileId = "";
+	  let needsToUpdate = false;
+	  
       let tokenClient;
       let gapiInited = false;
       let gisInited = false;
@@ -140,13 +145,47 @@
 	  //alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
 	  if(id !== 'nothing' && id !== 'undefined') {
+		currentFileId = id;
 		loadFileRaw(id, function(file){
+		  currentTree = file.body;
 		  document.getElementById('content').innerText = file.body;
 		});
 	  }
 	  
       document.getElementById('content').innerText = message;
     }
+	
+	function editFile(newText) {
+	  currentTree = newText;
+	  document.getElementById('content').innerText = currentTree;
+	  setUpdate();
+	}
+	
+	function setUpdate() {
+		needsToUpdate = true;
+		document.getElementById('needs_update').innerText = "Syncing with Drive...";
+		saveFileRaw(function(file) {
+			needsToUpdate = false;
+			document.getElementById('needs_update').innerText = "Fully Synced.";
+		});
+	}
+	
+	function saveFileRaw(done) {
+    function addContent() {
+      return gapi.client.request({
+          path: '/upload/drive/v3/files/' + currentFileId,
+          method: 'PATCH',
+          params: {
+            uploadType: 'media'
+          },
+          body: currentTree
+        })
+    }
+    addContent().then(function(resp) {
+        console.log('File just updated', resp.result);
+        done(resp.result);
+     });
+  }
 	
 	function loadFileRaw(fileId, done) {
     gapi.client.drive.files.get({
