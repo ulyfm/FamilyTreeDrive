@@ -22,6 +22,7 @@
 
       // TODO(developer): Set to client ID and API key from the Developer Console
       const CLIENT_ID = '268462531336-3njs1jn4drenn9bf875q5s6abcvp5r8d.apps.googleusercontent.com';
+	  const APP_ID = '268462531336';
       const API_KEY = 'AIzaSyBIDMPwxwOu0D1BVjFYxJbXiS_mXwmUHds';
 
       // Discovery doc URL for APIs used by the quickstart
@@ -30,7 +31,8 @@
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
       const SCOPES = 'https://www.googleapis.com/auth/drive.metadata' +
-	  ' https://www.googleapis.com/auth/drive.file';
+	  ' https://www.googleapis.com/auth/drive.file' +
+	  ' https://www.googleapis.com/auth/drive.install';
 
       let tokenClient;
       let gapiInited = false;
@@ -96,6 +98,7 @@
         const picker = new google.picker.PickerBuilder()
             .addView(view)
             .setOAuthToken(gapi.client.getToken().access_token)
+			.setAppId()
             .setDeveloperKey(API_KEY)
             .setCallback(pickerCallback)
             .build();
