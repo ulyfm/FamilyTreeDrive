@@ -137,9 +137,11 @@
 	  alert(`attempting to get ${id}`);
       let message = `You picked: ${url}`;
 	  if(id !== 'nothing') {
-		
+		loadFileRaw(id, function(file){
+		  alert('file contents:' + file.content);
+		});
 	  }
-	  loadFileRaw(id, 
+	  
       document.getElementById('content').innerText = message;
     }
 	
