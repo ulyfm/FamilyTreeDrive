@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Drive API Quickstart</title>
+    <title>Family Tree Drive</title>
     <meta charset="utf-8" />
   </head>
   <body>
@@ -153,6 +153,7 @@
       fileId: fileId,
       alt: 'media'
     }).then(function(resp) {
+	  alert(resp);
       var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
       alert("name: " + retFile.name);
 	  alert("body: " + retFile.body);
