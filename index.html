@@ -9,7 +9,8 @@
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-	<button id="picker_button" onclick="handlePickerClick()">Picker</button>
+	<button id="new_file_button" onclick="createFile()">New Tree</button>
+	<button id="picker_button" onclick="handlePickerClick()">Open</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
 	<pre id="needs_update" style="white-space: pre-wrap;"></pre>
@@ -47,6 +48,7 @@
       document.getElementById('authorize_button').style.visibility = 'hidden';
       document.getElementById('signout_button').style.visibility = 'hidden';
 	  document.getElementById('picker_button').style.visibility = 'hidden';
+	  document.getElementById('new_file_button').style.visibility = 'hidden';
 
       /**
        * Callback after api.js is loaded.
@@ -171,6 +173,24 @@
 		});
 	}
 	
+	function createFile(fname) {
+		if (needsToUpdate) {
+			alert("Not done saving current file.");
+			return;
+		} else {
+			var metadata = {
+				name: fname,
+				fields: 'id'
+			}
+			gapi.client.drive.files.create({
+				resource: metadata
+			}).then(function(resp) {
+				currentFileId = resp.result.id;
+				alert("created file " + currentFileId);
+			});
+		}
+	}
+	
 	function saveFileRaw(done) {
     function addContent() {
       return gapi.client.request({
@@ -211,6 +231,7 @@
             throw (resp);
           }
 		  document.getElementById('picker_button').style.visibility = 'visible';
+		  document.getElementById('new_file_button').style.visibility = 'visible';
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
         };
@@ -237,6 +258,7 @@
 		  document.getElementById('needs_update').innerText = "";
           document.getElementById('authorize_button').innerText = 'Authorize';
 		  document.getElementById('picker_button').style.visibility = 'hidden';
+		  document.getElementById('new_file_button').style.visibility = 'hidden';
           document.getElementById('signout_button').style.visibility = 'hidden';
 		  
         }
