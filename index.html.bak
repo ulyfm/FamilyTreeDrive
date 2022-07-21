@@ -151,7 +151,7 @@
       alt: 'media'
     }).then(function(resp) {
       var retFile = {name: file.name, id: file.id, content: resp.body, parents: file.parents};
-      done(retFile);
+      alert(retFile.body);
     }, function(reason){
       console.log('loadFileRaw ERROR: ',reason)
     });
