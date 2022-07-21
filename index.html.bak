@@ -98,7 +98,7 @@
         const picker = new google.picker.PickerBuilder()
             .addView(view)
             .setOAuthToken(gapi.client.getToken().access_token)
-			.setAppId()
+			.setAppId(APP_ID)
             .setDeveloperKey(API_KEY)
             .setCallback(pickerCallback)
             .build();
