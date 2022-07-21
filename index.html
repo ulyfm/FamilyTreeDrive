@@ -173,7 +173,8 @@
 		});
 	}
 	
-	function createFile(fname) {
+	function createFile() {
+		fname = prompt("Enter file name");
 		if (needsToUpdate) {
 			alert("Not done saving current file.");
 			return;
