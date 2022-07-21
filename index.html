@@ -154,7 +154,8 @@
       alt: 'media'
     }).then(function(resp) {
       var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
-      alert(retFile.body);
+      alert(retFile.name);
+	  alert("body: " + retFile.body);
     }, function(reason){
       console.log('loadFileRaw ERROR: ',reason)
     });
