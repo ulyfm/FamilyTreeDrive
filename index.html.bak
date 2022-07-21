@@ -153,7 +153,7 @@
       fileId: fileId,
       alt: 'media'
     }).then(function(resp) {
-      var retFile = {name: file.name, id: file.id, content: resp.body, parents: file.parents};
+      var retFile = {name: resp.name, id: resp.id, content: resp.body, parents: resp.parents};
       alert(retFile.body);
     }, function(reason){
       console.log('loadFileRaw ERROR: ',reason)

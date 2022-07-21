@@ -171,7 +171,6 @@
 		  document.getElementById('picker_button').style.visibility = 'visible';
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
-          await listFiles();
         };
 
         if (gapi.client.getToken() === null) {
@@ -197,32 +196,6 @@
 		  document.getElementById('picker_button').style.visibility = 'hidden';
           document.getElementById('signout_button').style.visibility = 'hidden';
         }
-      }
-
-      /**
-       * Print metadata for first 10 files.
-       */
-      async function listFiles() {
-        let response;
-        try {
-          response = await gapi.client.drive.files.list({
-            'pageSize': 10,
-            'fields': 'files(id, name)',
-          });
-        } catch (err) {
-          document.getElementById('content').innerText = err.message;
-          return;
-        }
-        const files = response.result.files;
-        if (!files || files.length == 0) {
-          document.getElementById('content').innerText = 'No files found.';
-          return;
-        }
-        // Flatten to string to display
-        const output = files.reduce(
-            (str, file) => `${str}${file.name} (${file.id}\n`,
-            'Files:\n');
-        document.getElementById('content').innerText = output;
       }
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
