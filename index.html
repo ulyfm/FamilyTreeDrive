@@ -1,271 +1,271 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Family Tree Drive</title>
     <meta charset="utf-8" />
-  </head>
-  <body>
-    <p>Family Tree Drive</p>
+</head>
 
+<body>
+    <p>Family Tree Drive</p>
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-	<button id="new_file_button" onclick="createFile()">New Tree</button>
-	<button id="picker_button" onclick="handlePickerClick()">Open</button>
+    <button id="new_file_button" onclick="createFile()">New Tree</button>
+    <button id="picker_button" onclick="handlePickerClick()">Open</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
-
-	<pre id="needs_update" style="white-space: pre-wrap;"></pre>
+    <pre id="needs_update" style="white-space: pre-wrap;"></pre>
     <pre id="content" style="white-space: pre-wrap;"></pre>
-
     <script type="text/javascript">
-      /* exported gapiLoaded */
-      /* exported gisLoaded */
-      /* exported handleAuthClick */
-      /* exported handleSignoutClick */
+    /* exported gapiLoaded */
+    /* exported gisLoaded */
+    /* exported handleAuthClick */
+    /* exported handleSignoutClick */
 
-      // TODO(developer): Set to client ID and API key from the Developer Console
-      const CLIENT_ID = '268462531336-3njs1jn4drenn9bf875q5s6abcvp5r8d.apps.googleusercontent.com';
-	  const APP_ID = '268462531336';
-      const API_KEY = 'AIzaSyBIDMPwxwOu0D1BVjFYxJbXiS_mXwmUHds';
+    // TODO(developer): Set to client ID and API key from the Developer Console
+    const CLIENT_ID = '268462531336-3njs1jn4drenn9bf875q5s6abcvp5r8d.apps.googleusercontent.com';
+    const APP_ID = '268462531336';
+    const API_KEY = 'AIzaSyBIDMPwxwOu0D1BVjFYxJbXiS_mXwmUHds';
 
-      // Discovery doc URL for APIs used by the quickstart
-      const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+    // Discovery doc URL for APIs used by the quickstart
+    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/drive.metadata' +
-	  ' https://www.googleapis.com/auth/drive.file' +
-	  ' https://www.googleapis.com/auth/drive.install';
+    // Authorization scopes required by the API; multiple scopes can be
+    // included, separated by spaces.
+    const SCOPES = 'https://www.googleapis.com/auth/drive.metadata' +
+        ' https://www.googleapis.com/auth/drive.file' +
+        ' https://www.googleapis.com/auth/drive.install';
 
-	  let currentTree = "";
-	  let currentFileId = "";
-	  let needsToUpdate = false;
-	  
-      let tokenClient;
-      let gapiInited = false;
-      let gisInited = false;
-	  let pickerInited = false;
+    let currentTree = "";
+    let currentFileId = "";
+    let needsToUpdate = false;
 
-      document.getElementById('authorize_button').style.visibility = 'hidden';
-      document.getElementById('signout_button').style.visibility = 'hidden';
-	  document.getElementById('picker_button').style.visibility = 'hidden';
-	  document.getElementById('new_file_button').style.visibility = 'hidden';
+    let tokenClient;
+    let gapiInited = false;
+    let gisInited = false;
+    let pickerInited = false;
 
-      /**
-       * Callback after api.js is loaded.
-       */
-      function gapiLoaded() {
+    document.getElementById('authorize_button').style.visibility = 'hidden';
+    document.getElementById('signout_button').style.visibility = 'hidden';
+    document.getElementById('picker_button').style.visibility = 'hidden';
+    document.getElementById('new_file_button').style.visibility = 'hidden';
+
+    /**
+     * Callback after api.js is loaded.
+     */
+    function gapiLoaded() {
         gapi.load('client', intializeGapiClient);
-		gapi.load('picker', onPickerApiLoad);
-      }
-	  
-	  function onPickerApiLoad() {
-		pickerInited = true;
-	  }
+        gapi.load('picker', onPickerApiLoad);
+    }
 
-      /**
-       * Callback after the API client is loaded. Loads the
-       * discovery doc to initialize the API.
-       */
-      async function intializeGapiClient() {
+    function onPickerApiLoad() {
+        pickerInited = true;
+    }
+
+    /**
+     * Callback after the API client is loaded. Loads the
+     * discovery doc to initialize the API.
+     */
+    async function intializeGapiClient() {
         await gapi.client.init({
-          apiKey: API_KEY,
-          discoveryDocs: [DISCOVERY_DOC],
+            apiKey: API_KEY,
+            discoveryDocs: [DISCOVERY_DOC],
         });
         gapiInited = true;
         maybeEnableButtons();
-      }
+    }
 
-      /**
-       * Callback after Google Identity Services are loaded.
-       */
-      function gisLoaded() {
+    /**
+     * Callback after Google Identity Services are loaded.
+     */
+    function gisLoaded() {
         tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: '', // defined later
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            callback: '', // defined later
         });
         gisInited = true;
         maybeEnableButtons();
-      }
+    }
 
-      /**
-       * Enables user interaction after all libraries are loaded.
-       */
-      function maybeEnableButtons() {
+    /**
+     * Enables user interaction after all libraries are loaded.
+     */
+    function maybeEnableButtons() {
         if (gapiInited && gisInited) {
-          document.getElementById('authorize_button').style.visibility = 'visible';
+            document.getElementById('authorize_button').style.visibility = 'visible';
         }
-      }
-
-	  function handlePickerClick() {
-      const showPicker = () => {
-        // TODO(developer): Replace with your API key
-		var view = new google.picker.DocsView(google.picker.ViewId.DOCS);
-		view.setQuery("*.ftdrive");
-        const picker = new google.picker.PickerBuilder()
-            .addView(view)
-            .setOAuthToken(gapi.client.getToken().access_token)
-			.setAppId(APP_ID)
-            .setDeveloperKey(API_KEY)
-            .setCallback(pickerCallback)
-            .build();
-        picker.setVisible(true);
-      }
-
-      // Use Google Identity Services to request an access token
-      tokenClient.callback = async (response) => {
-        if (response.error !== undefined) {
-          throw (response);
-        }
-        showPicker();
-      };
-		//alert(gapi.client.getToken().access_token);
-      if (gapi.client.getToken() === null) {
-	  //alert("gapi token null! requesting");
-        // Prompt the user to select a Google Account and ask for consent to share their data
-        // when establishing a new session.
-        tokenClient.requestAccessToken({prompt: 'consent'});
-      } else {
-	  //alert("skipping");
-        // Skip display of account chooser and consent dialog for an existing session.
-        showPicker();
-		//tokenClient.requestAccessToken({prompt: ''});
-      }
     }
-	
-	// A simple callback implementation.
+
+    function handlePickerClick() {
+        const showPicker = () => {
+            // TODO(developer): Replace with your API key
+            var view = new google.picker.DocsView(google.picker.ViewId.DOCS);
+            view.setQuery("*.ftdrive");
+            const picker = new google.picker.PickerBuilder()
+                .addView(view)
+                .setOAuthToken(gapi.client.getToken().access_token)
+                .setAppId(APP_ID)
+                .setDeveloperKey(API_KEY)
+                .setCallback(pickerCallback)
+                .build();
+            picker.setVisible(true);
+        }
+
+        // Use Google Identity Services to request an access token
+        tokenClient.callback = async (response) => {
+            if (response.error !== undefined) {
+                throw (response);
+            }
+            showPicker();
+        };
+        //alert(gapi.client.getToken().access_token);
+        if (gapi.client.getToken() === null) {
+            //alert("gapi token null! requesting");
+            // Prompt the user to select a Google Account and ask for consent to share their data
+            // when establishing a new session.
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        } else {
+            //alert("skipping");
+            // Skip display of account chooser and consent dialog for an existing session.
+            showPicker();
+            //tokenClient.requestAccessToken({prompt: ''});
+        }
+    }
+
+    // A simple callback implementation.
     function pickerCallback(data) {
-      let url = 'nothing';
-	  let id = 'nothing';
-      if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-	  
-        let doc = data[google.picker.Response.DOCUMENTS][0];
-        url = doc[google.picker.Document.URL];
-		id = doc[google.picker.Document.ID];
-		//alert(`ID: ${id}`);
-      }
-	  //alert(`attempting to get ${id}`);
-      let message = `You picked: ${url}`;
-	  if(id !== 'nothing' && id !== 'undefined') {
-		currentFileId = id;
-		loadFileRaw(id, function(file){
-		  currentTree = file.body;
-		  document.getElementById('content').innerText = file.body;
-		  document.getElementById('needs_update').innerText = "Fully Synced.";
-		});
-	  }
-	  
-      document.getElementById('content').innerText = message;
-    }
-	
-	function editFile(newText) {
-	  currentTree = newText;
-	  document.getElementById('content').innerText = currentTree;
-	  setUpdate();
-	}
-	
-	function setUpdate() {
-		needsToUpdate = true;
-		document.getElementById('needs_update').innerText = "Syncing with Drive...";
-		saveFileRaw(function(file) {
-			needsToUpdate = false;
-			document.getElementById('needs_update').innerText = "Fully Synced.";
-		});
-	}
-	
-	function createFile() {
-		fname = prompt("Enter file name:", "example.ftdrive");
-		if (needsToUpdate) {
-			alert("Not done saving current file.");
-			return;
-		} else {
-			var metadata = {
-				name: fname,
-				fields: 'id'
-			}
-			gapi.client.drive.files.create({
-				resource: metadata
-			}).then(function(resp) {
-				currentFileId = resp.result.id;
-				alert("created file " + currentFileId);
-			});
-		}
-	}
-	
-	function saveFileRaw(done) {
-    function addContent() {
-      return gapi.client.request({
-          path: '/upload/drive/v3/files/' + currentFileId,
-          method: 'PATCH',
-          params: {
-            uploadType: 'media'
-          },
-          body: currentTree
-        })
-    }
-    addContent().then(function(resp) {
-        console.log('File just updated', resp.result);
-        done(resp.result);
-     });
-  }
-	
-	function loadFileRaw(fileId, done) {
-    gapi.client.drive.files.get({
-      fileId: fileId,
-      alt: 'media',
-	  fields: 'id,name'
-    }).then(function(resp) {
-	console.log(JSON.stringify(resp));
-      var retFile = {name: resp.name, id: resp.id, body: resp.body};
-	  done(retFile);
-    }, function(reason){
-      console.log('loadFileRaw ERROR: ',reason)
-    });
-  }
+        let url = 'nothing';
+        let id = 'nothing';
+        if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
 
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick() {
+            let doc = data[google.picker.Response.DOCUMENTS][0];
+            url = doc[google.picker.Document.URL];
+            id = doc[google.picker.Document.ID];
+            //alert(`ID: ${id}`);
+        }
+        //alert(`attempting to get ${id}`);
+        let message = `You picked: ${url}`;
+        if (id !== 'nothing' && id !== 'undefined') {
+            currentFileId = id;
+            loadFileRaw(id, function(file) {
+                currentTree = file.body;
+                document.getElementById('content').innerText = file.body;
+                document.getElementById('needs_update').innerText = "Fully Synced.";
+            });
+        }
+
+        document.getElementById('content').innerText = message;
+    }
+
+    function editFile(newText) {
+        currentTree = newText;
+        document.getElementById('content').innerText = currentTree;
+        setUpdate();
+    }
+
+    function setUpdate() {
+        needsToUpdate = true;
+        document.getElementById('needs_update').innerText = "Syncing with Drive...";
+        saveFileRaw(function(file) {
+            needsToUpdate = false;
+            document.getElementById('needs_update').innerText = "Fully Synced.";
+        });
+    }
+
+    function createFile() {
+        fname = prompt("Enter file name:", "example.ftdrive");
+        if (needsToUpdate) {
+            alert("Not done saving current file.");
+            return;
+        } else {
+            var metadata = {
+                name: fname,
+                fields: 'id'
+            }
+            gapi.client.drive.files.create({
+                resource: metadata
+            }).then(function(resp) {
+                currentFileId = resp.result.id;
+                alert("created file " + currentFileId);
+            });
+        }
+    }
+
+    function saveFileRaw(done) {
+        function addContent() {
+            return gapi.client.request({
+                path: '/upload/drive/v3/files/' + currentFileId,
+                method: 'PATCH',
+                params: {
+                    uploadType: 'media'
+                },
+                body: currentTree
+            })
+        }
+        addContent().then(function(resp) {
+            console.log('File just updated', resp.result);
+            done(resp.result);
+        });
+    }
+
+    function loadFileRaw(fileId, done) {
+        gapi.client.drive.files.get({
+            fileId: fileId,
+            alt: 'media',
+            fields: 'id,name'
+        }).then(function(resp) {
+            console.log(JSON.stringify(resp));
+            var retFile = { name: resp.name, id: resp.id, body: resp.body };
+            done(retFile);
+        }, function(reason) {
+            console.log('loadFileRaw ERROR: ', reason)
+        });
+    }
+
+    /**
+     *  Sign in the user upon button click.
+     */
+    function handleAuthClick() {
         tokenClient.callback = async (resp) => {
-          if (resp.error !== undefined) {
-            throw (resp);
-          }
-		  document.getElementById('picker_button').style.visibility = 'visible';
-		  document.getElementById('new_file_button').style.visibility = 'visible';
-          document.getElementById('signout_button').style.visibility = 'visible';
-          document.getElementById('authorize_button').innerText = 'Refresh';
+            if (resp.error !== undefined) {
+                throw (resp);
+            }
+            document.getElementById('picker_button').style.visibility = 'visible';
+            document.getElementById('new_file_button').style.visibility = 'visible';
+            document.getElementById('signout_button').style.visibility = 'visible';
+            document.getElementById('authorize_button').innerText = 'Refresh';
         };
 
         if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          tokenClient.requestAccessToken({prompt: 'consent'});
+            // Prompt the user to select a Google Account and ask for consent to share their data
+            // when establishing a new session.
+            tokenClient.requestAccessToken({ prompt: 'consent' });
         } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          tokenClient.requestAccessToken({prompt: ''});
+            // Skip display of account chooser and consent dialog for an existing session.
+            tokenClient.requestAccessToken({ prompt: '' });
         }
-      }
+    }
 
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick() {
+    /**
+     *  Sign out the user upon button click.
+     */
+    function handleSignoutClick() {
         const token = gapi.client.getToken();
         if (token !== null) {
-          google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken('');
-          document.getElementById('content').innerText = '';
-		  document.getElementById('needs_update').innerText = "";
-          document.getElementById('authorize_button').innerText = 'Authorize';
-		  document.getElementById('picker_button').style.visibility = 'hidden';
-		  document.getElementById('new_file_button').style.visibility = 'hidden';
-          document.getElementById('signout_button').style.visibility = 'hidden';
-		  
+            google.accounts.oauth2.revoke(token.access_token);
+            gapi.client.setToken('');
+            document.getElementById('content').innerText = '';
+            document.getElementById('needs_update').innerText = "";
+            document.getElementById('authorize_button').innerText = 'Authorize';
+            document.getElementById('picker_button').style.visibility = 'hidden';
+            document.getElementById('new_file_button').style.visibility = 'hidden';
+            document.getElementById('signout_button').style.visibility = 'hidden';
+
         }
-      }
+    }
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-  </body>
+</body>
+
 </html>
