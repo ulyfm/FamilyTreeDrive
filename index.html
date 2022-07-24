@@ -54,11 +54,7 @@
      */
     function gapiLoaded() {
         gapi.load('client', intializeGapiClient);
-        gapi.load('picker', onPickerApiLoad);
-    }
-
-    function onPickerApiLoad() {
-        pickerInited = true;
+        gapi.load('picker', function() { pickerInited = true; });
     }
 
     /**
@@ -91,7 +87,7 @@
      * Enables user interaction after all libraries are loaded.
      */
     function maybeEnableButtons() {
-        if (gapiInited && gisInited) {
+        if (gapiInited && gisInited && pickerInited) {
             document.getElementById('authorize_button').style.visibility = 'visible';
         }
     }
