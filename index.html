@@ -115,9 +115,8 @@
         */
         if (gapi.client.getToken() === null) {
             tokenClient.requestAccessToken({ prompt: 'consent' });
-        } else {
-            showPicker();
         }
+        showPicker();
     }
 
     function pickerCallback(data) {
