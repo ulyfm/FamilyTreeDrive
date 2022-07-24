@@ -94,7 +94,6 @@
 
     function handlePickerClick() {
         const showPicker = () => {
-            // TODO(developer): Replace with your API key
             var view = new google.picker.DocsView(google.picker.ViewId.DOCS);
             view.setQuery("*.ftdrive");
             const picker = new google.picker.PickerBuilder()
@@ -106,29 +105,21 @@
                 .build();
             picker.setVisible(true);
         }
-
-        // Use Google Identity Services to request an access token
+        /* not sure if necessary.
         tokenClient.callback = async (response) => {
             if (response.error !== undefined) {
                 throw (response);
             }
             showPicker();
         };
-        //alert(gapi.client.getToken().access_token);
+        */
         if (gapi.client.getToken() === null) {
-            //alert("gapi token null! requesting");
-            // Prompt the user to select a Google Account and ask for consent to share their data
-            // when establishing a new session.
             tokenClient.requestAccessToken({ prompt: 'consent' });
         } else {
-            //alert("skipping");
-            // Skip display of account chooser and consent dialog for an existing session.
             showPicker();
-            //tokenClient.requestAccessToken({prompt: ''});
         }
     }
 
-    // A simple callback implementation.
     function pickerCallback(data) {
         let url = 'nothing';
         let id = 'nothing';
@@ -137,9 +128,7 @@
             let doc = data[google.picker.Response.DOCUMENTS][0];
             url = doc[google.picker.Document.URL];
             id = doc[google.picker.Document.ID];
-            //alert(`ID: ${id}`);
         }
-        //alert(`attempting to get ${id}`);
         let message = `You picked: ${url}`;
         if (id !== 'nothing' && id !== 'undefined') {
             currentFileId = id;
@@ -149,7 +138,6 @@
                 document.getElementById('needs_update').innerText = "Fully Synced.";
             });
         }
-
         document.getElementById('content').innerText = message;
     }
 
@@ -233,11 +221,8 @@
         };
 
         if (gapi.client.getToken() === null) {
-            // Prompt the user to select a Google Account and ask for consent to share their data
-            // when establishing a new session.
             tokenClient.requestAccessToken({ prompt: 'consent' });
         } else {
-            // Skip display of account chooser and consent dialog for an existing session.
             tokenClient.requestAccessToken({ prompt: '' });
         }
     }
