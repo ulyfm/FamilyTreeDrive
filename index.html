@@ -7,6 +7,7 @@
 </head>
 
 <body>
+  <div id="top-bar" style="display: flex; align-items: center">
     <p>Family Tree Drive</p>
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
@@ -15,6 +16,7 @@
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
     <pre id="needs_update" style="white-space: pre-wrap;"></pre>
     <pre id="content" style="white-space: pre-wrap;"></pre>
+  </div>
     <script type="text/javascript">
     /* exported gapiLoaded */
     /* exported gisLoaded */
